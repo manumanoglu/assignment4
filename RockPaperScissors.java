@@ -1,118 +1,107 @@
 import java.util.Scanner;
 public class RockPaperScissors {
- public static void main(String[] args) {
+    public static void main(String[] args) {
         // CS312 Students. Do not change the following line.
         RandomPlayer computerPlayer = buildRandomPlayer(args);
         // CS312 students do no change the following line. Do not create any other Scanners.
         Scanner keyboard = new Scanner(System.in);
-        intro();
-        String name = getName(keyboard);
-        welcome(name);
-        int roundNos = getRounds(keyboard);
-        int s1=0;
-        int s2=0;
+        String name = intro(keyboard);
+        int roundNos = getRoundNos(keyboard);
+        int player_score=0;
+        int computer_score=0;
         for (int i = 1; i <= roundNos; i++) {
             int computerChoice = computerPlayer.getComputerChoice();
-            rounds(name, i);
-            int playerChoice= getPlayersChoice(keyboard);
-
-            play(name, playerChoice, computerChoice);
-            int result=who_wins(playerChoice, computerChoice);
+            int result=round_play(i, computerChoice, name, keyboard);
             if (result==1){
-                s1++;
+                player_score++;
             }else if(result==2){
-                s2++;
+                computer_score++;
             }
         }
-        results(s1,s2,roundNos,name);
+        results(player_score,computer_score,roundNos,name);
         keyboard.close();
     }
-
-    public static void intro() {
+    public static String intro(Scanner keyboard) {
         System.out.println("Welcome to ROCK PAPER SCISSORS. I, Computer, will be your opponent.");
         System.out.print("Please type in your name and press return: ");
+        String name= keyboard.next();
+        System.out.print("Welcome, " + name + ".\nAll right " + name + ". ");
+        return name;
     }
-
-    public static String getName(Scanner keyboard) {
-        return keyboard.next();
-    }
-
-    public static void welcome(String name) {
-        System.out.println("Welcome, " + name + ".\nAll right " + name + ". How many rounds would you like to play?");
-        System.out.print("Enter the number of rounds you want to play and press return: ");
-    }
-
-    public static int getRounds(Scanner keyboard) {
+    public static int getRoundNos(Scanner keyboard) {
+        System.out.print("How many rounds would you like to play?\nEnter the number of rounds you want to play and press return: ");
         return keyboard.nextInt();
     }
-
-    public static void rounds(String name, int r) {
-        System.out.println("Round " + r + ".");
+    public static int round_play (int round_Nos, int computerChoice, String player_name, Scanner keyboard){
+            round_announce(player_name, round_Nos);
+            int playerChoice= getPlayersChoice(keyboard);
+            play_announce(player_name, playerChoice, computerChoice);
+            return who_wins(playerChoice, computerChoice);//result of the round
+    }
+    public static void round_announce(String name, int round_no) {
+        System.out.println("Round " + round_no + ".");
         System.out.println(name + ", please enter your choice for this round.");
         System.out.print("1 for ROCK, 2 for PAPER, and 3 for SCISSORS: ");
     }
     public static int getPlayersChoice(Scanner keyboard) {
         return keyboard.nextInt();
     }
-    public static void play(String name, int player, int enemy) {
-        System.out.println("Computer picked " + number_to_word(enemy) + ", " + name + " picked " + number_to_word(player) + ".");
+    public static void play_announce(String name, int player_pick, int computer_pick) {
+        System.out.println("Computer picked " + number_to_word(computer_pick) + ", " + name + " picked " + number_to_word(player_pick) + ".");
     }
-
-    public static String number_to_word(int x) {
-        if (x == 1) {
+    public static String number_to_word(int pick) {
+        if (pick == 1) {
             return "ROCK";
-        } else if (x == 2) {
+        } else if (pick == 2) {
             return "PAPER";
-        } else if(x==3) {
+        } else if(pick==3) {
             return "SCISSORS";
         }else{
             return "";
         }
     }
-    public static int who_wins(int p1, int p2) {
-        if (p1 == 1 && p2 == 1) {
+    public static int who_wins(int player_pick, int computer_pick) {
+        if (player_pick == computer_pick) {
             System.out.println("We picked the same thing! This round is a draw.");
-            return 0;
-        } else if (p1 == 1 && p2 == 2) {
-            System.out.println("PAPER covers ROCK. Computer wins.");
-            return 2;
-        } else if (p1 == 1 && p2 == 3) {
-            System.out.println("ROCK breaks SCISSORS. YOU WIN!");
-            return 1;
-        } else if (p1 == 2 && p2 == 1) {
-            System.out.println("PAPER covers ROCK. YOU WIN!");
-            return 1;
-        } else if (p1 == 2 && p2 == 2) {
-            System.out.println("We picked the same thing! This round is a draw.");
-            return 0;
-        } else if (p1 == 2 && p2 == 3) {
-            System.out.println("SCISSORS cut PAPER. Computer wins.");
-            return 2;
-        } else if (p1 == 3 && p2 == 1) {
-            System.out.println("ROCK breaks SCISSORS. Computer wins.");
-            return 2;
-        } else if (p1 == 3 && p2 == 2) {
-            System.out.println("SCISSORS cut PAPER. YOU WIN!");
-            return 1;
-        } else if (p1 == 3 && p2 == 3) {
-            System.out.println("We picked the same thing! This round is a draw.");
-            return 0;
-        } else {
-            return 3;
+        } else if ((player_pick == 1 && computer_pick == 2) || (player_pick == 2 && computer_pick == 1) ) {
+            System.out.print("PAPER covers ROCK.");
+        } else if ((player_pick == 1 && computer_pick == 3) || (player_pick == 3 && computer_pick == 1) ) {
+            System.out.print("ROCK breaks SCISSORS.") ;
+        } else if ((player_pick == 2 && computer_pick == 3) || (player_pick == 3 && computer_pick == 2)) {
+            System.out.print("SCISSORS cut PAPER.");
+        }
+        if (player_pick != computer_pick) {
+            if(computer_pick==2 || player_pick==2){
+                if (player_pick>computer_pick) {
+                    System.out.println("YOU WIN!");
+                    return 1;
+                }else{
+                    System.out.println("Computer wins.");
+                    return 2;
+                }
+            }else if(player_pick==1) {
+                System.out.println("YOU WIN!");
+                return 1;
+            }else{
+                System.out.println("Computer wins.");
+                return 2;
+            }
+        }else{
+            return 0; // 0 means draw
         }
     }
-    public static void  results(int s1, int s2, int n,String name){
-            System.out.println("Number of games of ROCK PAPER SCISSORS: "+ n);
-            System.out.println("Number of times Computer won: " + s2);
-            System.out.println("Number of times "+ name +" won: " +s1);
-            System.out.println("Number of draws: "+ (n-s1-s2));
-            if(s1<s2){
-                System.out.println("Computer wins.");
-            }else if(s1>s2){
-                System.out.println("YOU WIN!");
-            }else{
-                System.out.println("We are evenly matched.");
-            }
+    public static void  results(int player_round_wins, int computer_round_wins, int round_numbers,String player_name){
+        System.out.println("Number of games of ROCK PAPER SCISSORS: "+ round_numbers);
+        System.out.println("Number of times Computer won: " + computer_round_wins);
+        System.out.println("Number of times "+ player_name +" won: " +player_round_wins);
+        System.out.println("Number of draws: "+ (round_numbers-computer_round_wins-player_round_wins));
+        if(player_round_wins<computer_round_wins){
+            System.out.println("I, Computer, am a master at ROCK, PAPER, SCISSORS.");
+        }else if(player_round_wins>computer_round_wins){
+            System.out.println("You, " +player_name+", are a master at ROCK, PAPER, SCISSORS.");
+        }else{
+            System.out.println("We are evenly matched.");
+        }
     }
     public static RandomPlayer buildRandomPlayer(String[] args) {
         if(args.length == 0) {
